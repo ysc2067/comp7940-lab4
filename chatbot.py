@@ -17,19 +17,35 @@ def equiped_chatgpt(update, context):
 
 def main():
     # Load your token and create an Updater for your Bot
-    script_dir = os.path.dirname(os.path.abspath(__file__))
-    config_path = os.path.join(script_dir, 'config.ini')
-    config = configparser.ConfigParser()
-    config.read(config_path)
-    updater = Updater(token=(config['TELEGRAM']['ACCESS_TOKEN']), use_context=True)
+    #script_dir = os.path.dirname(os.path.abspath(__file__))
+    #config_path = os.path.join(script_dir, 'config.ini')
+    #config = configparser.ConfigParser()
+    #config.read(config_path)
+    updater = Updater(token=(os.environ["TELEGRAM_ACCESS_TOKEN"]), use_context=True)
     dispatcher = updater.dispatcher
 
-    global redis1
-    redis1 = redis.Redis(host=(config['REDIS']['HOST']),
-                         password=(config['REDIS']['PASSWORD']),
-                         port=(config['REDIS']['REDISPORT']),
-                         decode_responses=(config['REDIS']['DECODE_RESPONSE']),
-                         username=(config['REDIS']['USER_NAME']))
+    #global redis1
+    #redis1 = redis.Redis(host=(config['REDIS']['HOST']),
+                         #password=(config['REDIS']['PASSWORD']),
+                         #port=(config['REDIS']['REDISPORT']),
+                         #decode_responses=(config['REDIS']['DECODE_RESPONSE']),
+                         #username=(config['REDIS']['USER_NAME']))
+
+    redis1 = redis.Redis(
+            host=os.environ["REDIS_HOST"],
+            password=os.environ["REDIS_PASSWORD"],
+            port=int(os.environ["REDIS_PORT"]),
+            decode_responses=(os.environ["REDIS_DECODE_RESPONSE"].lower() == "true"),
+            username=os.environ["REDIS_USER_NAME"]
+    )
+
+    chatgpt_config = {
+            "BASICURL": os.environ["CHATGPT_BASICURL"],
+            "MODELNAME": os.environ["CHATGPT_MODELNAME"],
+            "APIVERSION": os.environ["CHATGPT_APIVERSION"],
+            "ACCESS_TOKEN": os.environ["CHATGPT_ACCESS_TOKEN"]
+    }
+
 
     # You can set this logging module, so you will know when
     # and why things do not work as expected Meanwhile, update your config.ini as:
@@ -41,7 +57,7 @@ def main():
     #dispatcher.add_handler(echo_handler)
     # dispatcher for chatgpt
     global chatgpt
-    chatgpt = HKBU_ChatGPT(config)
+    chatgpt = HKBU_ChatGPT(chatgpt_config)
     chatgpt_handler = MessageHandler(Filters.text & (~Filters.command), equiped_chatgpt)
     dispatcher.add_handler(chatgpt_handler)
 
