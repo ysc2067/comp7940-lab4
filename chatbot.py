@@ -1,8 +1,10 @@
-from telegram import Update
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext
+from telegram import Update
 import configparser
 import logging
 import redis
+import os
+
 global redis1
 from ChatGPT_HKBU import HKBU_ChatGPT
 
@@ -15,8 +17,10 @@ def equiped_chatgpt(update, context):
 
 def main():
     # Load your token and create an Updater for your Bot
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    config_path = os.path.join(script_dir, 'config.ini')
     config = configparser.ConfigParser()
-    config.read('config.ini')
+    config.read(config_path)
     updater = Updater(token=(config['TELEGRAM']['ACCESS_TOKEN']), use_context=True)
     dispatcher = updater.dispatcher
 
