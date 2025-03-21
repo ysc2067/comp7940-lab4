@@ -34,7 +34,7 @@ def main():
     redis1 = redis.Redis(
             host=os.environ["REDIS_HOST"],
             password=os.environ["REDIS_PASSWORD"],
-            port=int(os.environ["REDIS_PORT"]),
+            port=int(os.environ["REDIS_REDISPORT"]),
             decode_responses=(os.environ["REDIS_DECODE_RESPONSE"].lower() == "true"),
             username=os.environ["REDIS_USER_NAME"]
     )
